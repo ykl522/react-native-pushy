@@ -25,8 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.HashMap;
 
@@ -280,7 +282,28 @@ class DownloadTask extends AsyncTask<DownloadTaskParams, long[], Void> {
     private void copyFromResource(HashMap<String, ArrayList<File> > resToCopy) throws IOException {
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(context.getPackageResourcePath())));
         ZipEntry ze;
-        while ((ze = zis.getNextEntry()) != null) {
+//        while ((ze = zis.getNextEntry()) != null) {
+//            String fn = ze.getName();
+//            ArrayList<File> targets = resToCopy.get(fn);
+//            if (targets != null) {
+//                File lastTarget = null;
+//                for (File target: targets) {
+//                    if (UpdateContext.DEBUG) {
+//                        Log.d("RNUpdate", "Copying from resource " + fn + " to " + target);
+//                    }
+//                    if (lastTarget != null) {
+//                        copyFile(lastTarget, target);
+//                    } else {
+//                        unzipToFile(zis, target);
+//                        lastTarget = target;
+//                    }
+//                }
+//            }
+//        }
+        ZipFile zipFile= new ZipFile(new File(context.getPackageResourcePath()));
+        Enumeration<? extends ZipEntry> zipFiles = zipFile.entries();
+        while (zipFiles.hasMoreElements()) {
+            ze = zipFiles.nextElement();
             String fn = ze.getName();
             ArrayList<File> targets = resToCopy.get(fn);
             if (targets != null) {
